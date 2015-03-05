@@ -1,0 +1,8 @@
+---
+db:
+  mysql:
+    root_password: password
+    users:
+        - name: sample
+          password: password
+          privs: "sampledb.*:ALL"
