@@ -1,0 +1,7 @@
+---
+# file: mysile.yml
+- hosts: do
+  remote_user: root
+  roles:
+    - lap-common
+    - mysite
