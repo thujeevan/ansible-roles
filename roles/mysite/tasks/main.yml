@@ -1,0 +1,29 @@
+---
+# file: roles/mysite/tasks/main.yml
+
+- name: Configuration file for our site
+  template: src=001-mysite.j2 dest=/etc/apache2/sites-available/001-thujeevan.info.conf
+  tags:
+      - configs
+
+- name: Create dir for site
+  file: path=/var/www/thujeevan.info/ state=directory owner=www-data group=www-data mode=0755
+
+- name: Create log dir for site thujeevan.info
+  file: path=/var/log/thujee/ state=directory owner=www-data group=www-data mode=0755
+
+- name: Move site dir to server
+  synchronize: src=~/Desktop/sources/startssl/thujeevan.info/new/ dest=/var/www/thujeevan.info/
+  tags:
+      - sync
+
+- name: Move ssl certs dir to server
+  synchronize: src=~/Desktop/sources/startssl/certs dest=/etc/apache2/ssl/thujee/
+  tags:
+      - sync
+
+- name: Enable site thujeevan.info
+  command: a2ensite 001-thujeevan.info
+  notify: restart apache2
+  tags:
+      - configs

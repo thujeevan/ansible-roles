@@ -1,0 +1,4 @@
+---
+mysite:
+  admin_email: admin@thujeevan.info
+  doc_root : /var/www/thujeevan.info
