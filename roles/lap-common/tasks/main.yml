@@ -1,0 +1,5 @@
+---
+# file: roles/lamp/tasks/main.yml
+
+- include: lap_debian.yml tags=lap
+  when: ansible_distribution in [ 'Debian', 'Ubuntu' ]
