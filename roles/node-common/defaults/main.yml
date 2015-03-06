@@ -1,0 +1,16 @@
+---
+nodejs_version     : "0.12.0"
+nodejs_version_tag : "v0.12.0"
+nodejs_file_tag    : "node-v0.12.0"
+nodejs_file_name   : "node-v0.12.0.tar.gz"
+nodejs_base_url    : "http://nodejs.org/dist/v0.12.0/"
+nodejs_tarball_url : "http://nodejs.org/dist/v0.12.0/node-v0.12.0.tar.gz"
+nodejs_shasum_url  : "http://nodejs.org/dist/v0.12.0/SHASUMS.txt"
+nodejs_path        : "/usr/local/"
+nodejs_tmp_dir     : "/tmp/"
+nodejs_global_packages:
+  - nodemon
+  - debug
+  - foreman
+  - bower
+  - forever
