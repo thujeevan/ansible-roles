@@ -1,0 +1,85 @@
+---
+- name: Install necessary packages to unarchive
+  apt: pkg={{ item }} state=latest
+  with_items:
+      - zip
+      - unzip
+      - tar
+  tags :
+      - install
+
+- name: Creates {{ ghost.group }} group for ghost account
+  group: name={{ ghost.group }}
+  tags :
+      - config
+
+- name: Creates {{ ghost.user }} user for ghost account
+  user: name={{ ghost.user }} group={{ ghost.group }}
+  tags :
+      - config
+
+- name: Download latest Ghost
+  get_url: url={{ ghost.archive_url }}{{ ghost.archive_name }} dest={{ ghost.download_dir }}
+  register : ghost_downloaded
+  tags :
+      - install
+
+- name: Create {{ ghost.install_dir }} directory for site
+  file: path={{ ghost.install_dir }} state=directory owner={{ ghost.user }} group={{ ghost.group }} mode=0755
+  tags :
+      - install
+
+- name: Unpack Ghost and move to {{ ghost.install_dir }}
+  unarchive: src={{ ghost_downloaded.dest }} dest={{ ghost.install_dir }} copy=no
+  register: moved
+  tags :
+      - install
+
+- name: Install Ghost {{ ghost.install_version }}
+  command : chdir={{ ghost.install_dir }} /usr/local/bin/npm install --{{ ghost.install_version }}
+  tags :
+      - install
+
+- name: Copy ghost config for host {{ host }}
+  template: src=config.js.j2 dest={{ ghost.install_dir }}config.js
+  tags :
+      - install
+
+- name: Copy init script - run Ghost forever
+  template: src=ghost.init.j2 dest=/etc/init.d/ghost mode=0755
+  tags :
+      - config
+
+- name: change ownership of {{ ghost.install_dir }}
+  file: path={{ ghost.install_dir }} owner={{ ghost.user }} group={{ ghost.group }} mode=0755 recurse=yes
+  notify : start ghost
+  tags :
+      - config
+
+- name: Register ghost script on startup
+  command: "{{ item }}"
+  with_items:
+      - /usr/sbin/update-rc.d ghost defaults
+      - /usr/sbin/update-rc.d ghost enable
+  tags :
+      - config
+
+- name: Copy apache config for reverse proxy
+  template: src=apache.conf.j2 dest=/etc/apache2/sites-available/002-blog.thujeevan.info.conf
+  tags :
+      - config
+
+- name: Enable necessary apache2 modules
+  command: a2enmod {{ item }}
+  with_items:
+      - proxy
+      - proxy_http
+  notify: restart apache2
+  tags :
+      - config
+
+- name: Enable site {{ blog.host }}
+  command: a2ensite 002-blog.thujeevan.info
+  notify: restart apache2
+  tags:
+      - config

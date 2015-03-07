@@ -1,0 +1,24 @@
+---
+node :
+    daemon : "/usr/local/bin/node"
+
+ghost :
+    user : ghost
+    group : ghost
+    archive_url : "https://ghost.org/zip/"
+    archive_name : ghost-latest.zip
+    download_dir : "/tmp/"
+    install_dir : "/var/www/ghost/"
+    install_version : production
+    environment : production
+
+host : hostname
+blog :
+    url : "http://{{ host }}"
+    admin_email : admin@hostname.com
+    mail :
+        transport : SMTP
+        host : smtp.mandrillapp.com
+        service : Mandrill
+        user : username
+        pass : password
